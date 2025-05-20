@@ -33,19 +33,19 @@ if uploaded_file:
     reset_life = st.sidebar.checkbox("🔄 Reset Shaker Life After Maintenance")
     failure_threshold = st.sidebar.slider("🚨 Failure Threshold (%)", 0, 100, 30)
     simulate_live = st.sidebar.toggle("📡 Simulate Live Monitoring", value=True)
-    hours_to_simulate = st.sidebar.slider("🕒 Hours to Simulate", 1, 24, 1)
+    days_to_simulate = st.sidebar.slider("📅 Days to Simulate", 1, 30, 1)
 
     df_full['SHAKER Output'] = df_full.get('SHAKER #1 (Units)', 0).fillna(0) + df_full.get('SHAKER #2 (Units)', 0).fillna(0)
     df_full['Timestamp'] = pd.to_datetime(df_full['YYYY/MM/DD'] + ' ' + df_full['HH:MM:SS'], errors='coerce')
 
     if simulate_live:
-        st.subheader("📊 Simulated Live Shaker Output (per hour)")
+        st.subheader("📊 Simulated Live Shaker Output (per day)")
         chart_placeholder = st.empty()
         status_placeholder = st.empty()
         chart_df = pd.DataFrame(columns=['SHAKER Output'])
 
         total_points = len(df_full)
-        chunk_size = int(total_points / hours_to_simulate)
+        chunk_size = int(total_points / days_to_simulate)
 
         for i in range(chunk_size, total_points + chunk_size, chunk_size):
             batch_df = df_full.iloc[:i].copy()
@@ -65,7 +65,7 @@ if uploaded_file:
             time.sleep(1.5)
 
         rain(emoji="💧", font_size=24, falling_speed=4, animation_length="medium")
-        st.success("✅ Hour-wise simulation complete")
+        st.success("✅ Day-wise simulation complete")
 
     if st.button("🚀 Run ML Analysis via API"):
         st.info("📨 Sending data to backend API for analysis...")
